@@ -25,7 +25,6 @@ function Square(props) {
 
     return (
       <div>
-        
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -81,10 +80,11 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-
+    const x = 0;
+    const y = 0;
     const moves = history.map((step,move)=>{
         const desc = move?
-        "Перейти к ходу №" + move:
+        `Перейти к ходу (позиция(${x},${y})) №` + move:
         "К началу игры";
         return(
           <li key={move}>
@@ -96,7 +96,8 @@ class Game extends React.Component {
     if(winner){
       status = "Выиграл "+winner;  
     }else{
-      status = "Слеующий ход "+(this.state.xIsNext ? "X":"O");  
+      if(!(current.squares.some(elem=>elem === null))){
+        status = "Ничья"}else{status = "Слеующий ход "+(this.state.xIsNext ? "X":"O");}
     }
     return (
       <div className="game">
