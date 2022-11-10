@@ -5,7 +5,7 @@ import './index.css';
 function Square(props) {
     return (
       <button 
-        className="square" 
+        className="square red" 
         onClick={props.onClick}
       >
         {props.value}
@@ -41,7 +41,7 @@ function Square(props) {
           {this.renderSquare(8)}
         </div>
       </div>
-    );
+    ); 
   }
 }
 
