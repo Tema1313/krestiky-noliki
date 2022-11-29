@@ -19,7 +19,7 @@ class Board extends React.Component {
             value={this.props.squares[i][j]}
             onClick={() => this.props.onClick(i, j)}
             click={true}
-          /> : 
+          /> :
           <Square
             value={this.props.squares[i][j]}
             onClick={() => this.props.onClick(i, j)}
@@ -33,23 +33,11 @@ class Board extends React.Component {
 
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0, 0)}
-          {this.renderSquare(0, 1)}
-          {this.renderSquare(0, 2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(1, 0)}
-          {this.renderSquare(1, 1)}
-          {this.renderSquare(1, 2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(2, 0)}
-          {this.renderSquare(2, 1)}
-          {this.renderSquare(2, 2)}
-        </div>
+        {Array.from([0, 1, 2], x => <div className="board-row">
+          {Array.from([0,1,2], y => this.renderSquare(x,y))}
+        </div>)}
       </div>
-    );
+    )
   }
 }
 
