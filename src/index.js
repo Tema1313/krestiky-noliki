@@ -54,13 +54,13 @@ class Game extends React.Component {
             Array(3).fill(null),
             Array(3).fill(null),
             Array(3).fill(null)
-          ]
+          ],
+          lasti:0,
+          lastj:0
         }
       ],
       xIsNext: true,
       stepNumber: 0,
-      column:0,
-      roads:0
     }
   }
 
@@ -78,11 +78,11 @@ class Game extends React.Component {
     this.setState({
       history: history.concat([{
         squares: squares,
+        lasti:i+1,
+        lastj:j+1
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
-      roads: i+1,
-      column: j+1
     })
   }
 
@@ -100,7 +100,7 @@ class Game extends React.Component {
     
     const moves = history.map((step, move) => {
       const desc = move ?
-        "Перейти к ходу #" + move :
+        "Перейти к ходу #" + move + `(${history[move].lasti},${history[move].lastj})`:
         "К началу игры";
       return (
         <li key={move}>
