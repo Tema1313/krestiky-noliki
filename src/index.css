@@ -36,10 +36,6 @@ body {
     outline: none;
   }
   
-  .kbd-navigation .square:focus {
-    background: #ddd;
-  }
-  
   .game {
     display: flex;
     flex-direction: row;
@@ -47,5 +43,9 @@ body {
   
   .game-info {
     margin-left: 20px;
+  }
+
+  .set-click{
+    background-color: red;
   }
   
