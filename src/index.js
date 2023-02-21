@@ -59,7 +59,8 @@ class Game extends React.Component {
       xIsNext: true,
       stepNumber: 0,
       iClick: 0,
-      jClick: 0
+      jClick: 0,
+      inAscending: true
     }
   }
 
@@ -96,21 +97,60 @@ class Game extends React.Component {
     })
   }
 
+  switchSort(){
+    this.setState({
+      inAscending: !this.state.inAscending
+    })
+  }
+
+  createList(inAscending){
+    if(inAscending){
+      return (
+        this.state.history.map((step, move) => {
+          const desc = move ?
+            "Перейти к ходу #" + move + `(${this.state.history[move].lasti},${this.state.history[move].lastj})` :
+            "К началу игры";
+          return (
+            <li key={move}>
+              <button onClick={() => this.jumpTo(move, this.state.history[move].lasti, this.state.history[move].lastj)}>{desc}</button>
+            </li>
+          )
+        })
+      )
+    }else{
+      //Копия оригинального массива
+      const copyHistory = this.state.history.slice()
+      //Переворачиваем массив
+      const reversed = copyHistory.reverse();
+      let reversedLength = reversed.length
+      console.log(reversed)
+      return(
+        reversed.map((step, move)=>{
+          reversedLength = reversedLength-1
+          const turnMove = reversedLength //Очередь хода
+          const desc = turnMove ?
+            "Перейти к ходу #" + turnMove + `(${reversed[move].lasti},${reversed[move].lastj})` :
+            "К началу игры";
+          return(
+            <li key={turnMove}>
+              <button onClick={() => this.jumpTo(turnMove, reversed[move].lasti, reversed[move].lastj)}>{desc}</button>
+            </li>
+          )
+        })
+          
+      )
+    }
+
+  }
+
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
-    const moves = history.map((step, move) => {
-      const desc = move ?
-        "Перейти к ходу #" + move + `(${history[move].lasti},${history[move].lastj})` :
-        "К началу игры";
-      return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move, history[move].lasti, history[move].lastj)}>{desc}</button>
-        </li>
-      )
-    });
+    //moves приравнять к действию какого-либо метода, который будет возвращать список 
+    //в зависимости от параметра в состоянии
+    const moves = this.createList(this.state.inAscending)
 
     let status;
     if (winner) {
@@ -130,7 +170,8 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          <button onClick={()=>this.switchSort()}>{this.state.inAscending ? "По убыванию" : "По возрастанию"}</button>
+          <ol className={this.state.inAscending ? "" : "a"}>{moves}</ol>
         </div>
       </div>
     );

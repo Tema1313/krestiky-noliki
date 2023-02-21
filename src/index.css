@@ -48,4 +48,15 @@ body {
   .set-click{
     background-color: red;
   }
+
+  .a li{
+    list-style-type: none;
+  }
+
+  .a li::before{
+    content: "►"; 
+    padding-right: 0.5em; /* Расстояние от маркера до текста */
+  }
+
+
   
