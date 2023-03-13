@@ -182,8 +182,10 @@ class Game extends React.Component {
     let status;
     if (winner) {
       status = 'Выиграл ' + winner.symbol;
-    } else {
+    } else if(winner === null && !(checkDraw(current.squares))){
       status = 'Следующий ход: ' + (this.state.xIsNext ? 'X' : 'O');
+    }else{
+      status = "Ничья";
     }
     return (
       <div className="game">
@@ -211,6 +213,18 @@ class Game extends React.Component {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<Game />);
 
+function checkDraw(squares){
+  for(let i = 0; i < 3;i++){
+    for(let j = 0; j < 3;j++){
+      if(squares[i][j] === null){
+        return false
+      }
+    }
+  }
+  alert("Ничья")
+  return true
+}
+
 function calculateWinner(squares) {
   const lines = [
     [[0, 0], [0, 1], [0, 2]],
@@ -225,7 +239,6 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i]
     if (squares[a[0]][a[1]] && squares[a[0]][a[1]] === (squares[b[0]][b[1]]) && squares[a[0]][a[1]] === squares[c[0]][c[1]]) {
-      console.log(squares[a[0]][a[1]])
       return {
         symbol: squares[a[0]][a[1]],
         lineWin: lines[i]
