@@ -1,40 +1,69 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
 function Square(props) {
   return (
-    <button className={props.click ? "square set-click" : "square"} onClick={props.onClick}>
+    <button className={`${props.click ? "square set-click" : "square"} ${props.winnerSquare ? "winner" : ""}`} onClick={props.onClick}>
       {props.value}
     </button>
   );
 }
 
 class Board extends React.Component {
-  renderSquare(i, j) {
-    return (
-      <>
-        {(this.props.iClick === i && this.props.jClick === j) ?
-          <Square
-            value={this.props.squares[i][j]}
-            onClick={() => this.props.onClick(i, j)}
-            click={true}
-          /> :
-          <Square
-            value={this.props.squares[i][j]}
-            onClick={() => this.props.onClick(i, j)}
-          />
-        }
-      </>
-    );
+  checkWinnerSquare(i,j){
+    let win = false
+    this.props.lineWinner.forEach((cell)=>{
+      if(cell[0]===i && cell[1]===j){
+        win=true
+      }
+    })
+    return win
+  }
+
+  renderSquare(i, j, key) {
+    if (this.props.lineWinner.length === 0) {
+      return (
+        <Fragment key={key}>
+          {(this.props.iClick === i && this.props.jClick === j) ?
+            <Square
+              value={this.props.squares[i][j]}
+              onClick={() => this.props.onClick(i, j)}
+              click={true}
+            /> :
+            <Square
+              value={this.props.squares[i][j]}
+              onClick={() => this.props.onClick(i, j)}
+            />
+          }
+        </Fragment>
+      );
+    } else {
+      return (
+        <Fragment key={key}>
+          {(this.props.iClick === i && this.props.jClick === j) ?
+            <Square
+              value={this.props.squares[i][j]}
+              onClick={() => this.props.onClick(i, j)}
+              click={true}
+            /> :
+            <Square
+              value={this.props.squares[i][j]}
+              onClick={() => this.props.onClick(i, j)}
+              winnerSquare={this.checkWinnerSquare(i,j)}
+            />
+          }
+        </Fragment>
+      );
+    }
   }
 
   render() {
-
+    let key = 0
     return (
       <div>
-        {Array.from([0, 1, 2], x => <div className="board-row">
-          {Array.from([0,1,2], y => this.renderSquare(x,y))}
+        {Array.from([0, 1, 2], x => <div key={key += 1} className="board-row">
+          {Array.from([0, 1, 2], (y) => this.renderSquare(x, y, key += 1))}
         </div>)}
       </div>
     )
@@ -97,14 +126,14 @@ class Game extends React.Component {
     })
   }
 
-  switchSort(){
+  switchSort() {
     this.setState({
       inAscending: !this.state.inAscending
     })
   }
 
-  createList(inAscending){
-    if(inAscending){
+  createList(inAscending) {
+    if (inAscending) {
       return (
         this.state.history.map((step, move) => {
           const desc = move ?
@@ -117,30 +146,28 @@ class Game extends React.Component {
           )
         })
       )
-    }else{
+    } else {
       //Копия оригинального массива
       const copyHistory = this.state.history.slice()
       //Переворачиваем массив
       const reversed = copyHistory.reverse();
       let reversedLength = reversed.length
-      console.log(reversed)
-      return(
-        reversed.map((step, move)=>{
-          reversedLength = reversedLength-1
+      return (
+        reversed.map((step, move) => {
+          reversedLength = reversedLength - 1
           const turnMove = reversedLength //Очередь хода
           const desc = turnMove ?
             "Перейти к ходу #" + turnMove + `(${reversed[move].lasti},${reversed[move].lastj})` :
             "К началу игры";
-          return(
+          return (
             <li key={turnMove}>
               <button onClick={() => this.jumpTo(turnMove, reversed[move].lasti, reversed[move].lastj)}>{desc}</button>
             </li>
           )
         })
-          
+
       )
     }
-
   }
 
   render() {
@@ -154,7 +181,7 @@ class Game extends React.Component {
 
     let status;
     if (winner) {
-      status = 'Выиграл ' + winner;
+      status = 'Выиграл ' + winner.symbol;
     } else {
       status = 'Следующий ход: ' + (this.state.xIsNext ? 'X' : 'O');
     }
@@ -166,11 +193,12 @@ class Game extends React.Component {
             onClick={(i, j) => this.handleClick(i, j)}
             iClick={this.state.iClick - 1}
             jClick={this.state.jClick - 1}
+            lineWinner={winner?.lineWin || []}
           />
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <button onClick={()=>this.switchSort()}>{this.state.inAscending ? "По убыванию" : "По возрастанию"}</button>
+          <button onClick={() => this.switchSort()}>{this.state.inAscending ? "По убыванию" : "По возрастанию"}</button>
           <ol className={this.state.inAscending ? "" : "a"}>{moves}</ol>
         </div>
       </div>
@@ -197,7 +225,11 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i]
     if (squares[a[0]][a[1]] && squares[a[0]][a[1]] === (squares[b[0]][b[1]]) && squares[a[0]][a[1]] === squares[c[0]][c[1]]) {
-      return squares[a[0]][a[1]];
+      console.log(squares[a[0]][a[1]])
+      return {
+        symbol: squares[a[0]][a[1]],
+        lineWin: lines[i]
+      };
     }
   }
   return null;
